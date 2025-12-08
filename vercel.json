@@ -1,0 +1,26 @@
+{
+    "framework": "vite",
+    "installCommand": "npm install --prefix frontend",
+    "builds": [
+        {
+            "src": "frontend/package.json",
+            "use": "@vercel/static-build"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "https://pi-stack-risk-model.onrender.com/wasm/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/frontend/$1"
+        }
+    ],
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/$1"
+        }
+    ]
+}
