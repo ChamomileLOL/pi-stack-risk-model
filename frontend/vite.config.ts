@@ -2,7 +2,8 @@
 import solid from 'vite-plugin-solid';
 
 export default defineConfig({
-  // 🏆 FIX: Tell Vercel to look for assets starting from the root URL.
-  base: '/', 
-  plugins: [solid()],
+    // 🏆 FINAL FIX: Change from absolute ('/') to relative ('./') path.
+    // This tells the browser to look for assets in the SAME folder as the HTML file.
+    base: './',
+    plugins: [solid()],
 });
