@@ -1,0 +1,11 @@
+# Environment variables containing secrets
+.env
+
+# Dependencies and build output
+node_modules
+/frontend/node_modules
+/frontend/risk-model-pkg
+/risk_wasm/target
+
+# Visual Studio Cache (Crucial to ignore on Windows)
+.vs/
