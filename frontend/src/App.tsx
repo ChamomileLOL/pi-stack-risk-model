@@ -1,7 +1,18 @@
-﻿import { createSignal } from 'solid-js';
+﻿import { createSignal, onMount, type Accessor } from 'solid-js';
 import './App.css';
 
-function App() {
+// Fix: Import types required for standard HTML elements
+import type { Component, HTMLAttributes } from 'solid-js';
+
+// Fix: Define type for the fetched result
+type RiskResult = {
+    message: string;
+    timestamp: string;
+};
+
+// Use Component type for the main function
+const App: Component = () => {
+    // Corrected state types
     const [result, setResult] = createSignal<string | null>(null);
     const [loading, setLoading] = createSignal(false);
     const [error, setError] = createSignal<string | null>(null);
@@ -21,7 +32,9 @@ function App() {
             const response = await fetch(`${API_BASE}/wasm/edge`);
 
             if (!response.ok) {
-                throw new Error(`Server Error: ${response.statusText}`);
+                // Read error message from response text if available
+                const errorText = await response.text();
+                throw new Error(`Server Error (${response.status}): ${errorText.substring(0, 100)}...`);
             }
 
             const text = await response.text();
@@ -34,28 +47,30 @@ function App() {
     };
 
     return (
-        <div className="App">
-            <header className="header">
+        <div class="App"> {/* Fix: Use 'class' instead of 'className' */}
+            <header class="header">
                 <h1>π Stack Risk Model</h1>
                 <p>End-to-End Type Safety: Rust 🦀 → Wasm 🕸️ → Go 🐹 → DB 🐘</p>
             </header>
 
-            <div className="card">
-                <button onClick={calculateRisk} disabled={loading}>
-                    {loading ? 'Calculating Monte Carlo...' : '⚡ Run Risk Simulation'}
+            <div class="card"> {/* Fix: Use 'class' instead of 'className' */}
+                <button onClick={calculateRisk} disabled={loading()}> {/* Fix: Call accessor function 'loading()' */}
+                    {loading() ? 'Calculating Monte Carlo...' : '⚡ Run Risk Simulation'}
                 </button>
 
-                {error && <div className="error">❌ {error}</div>}
+                {/* Fix: Call accessor function 'error()' */}
+                {error() && <div class="error">❌ {error()}</div>}
 
-                {result && (
-                    <div className="success">
+                {/* Fix: Call accessor function 'result()' */}
+                {result() && (
+                    <div class="success"> {/* Fix: Use 'class' instead of 'className' */}
                         <h3>✅ Simulation Complete</h3>
-                        <pre>{result}</pre>
+                        <pre>{result()}</pre>
                     </div>
                 )}
             </div>
         </div>
     );
-}
+};
 
 export default App;
