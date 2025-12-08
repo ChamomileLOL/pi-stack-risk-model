@@ -1,14 +1,8 @@
-﻿import { createSignal, onMount, type Accessor } from 'solid-js';
+﻿import { createSignal } from 'solid-js';
 import './App.css';
 
 // Fix: Import types required for standard HTML elements
-import type { Component, HTMLAttributes } from 'solid-js';
-
-// Fix: Define type for the fetched result
-type RiskResult = {
-    message: string;
-    timestamp: string;
-};
+import type { Component } from 'solid-js';
 
 // Use Component type for the main function
 const App: Component = () => {

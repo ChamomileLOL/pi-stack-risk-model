@@ -6,13 +6,17 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc -b && vite build",
-        "serve": "vite preview"
+        "serve": "vite preview",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d dist"
     },
+    "homepage": "https://chamomilelol.github.io/pi-stack-risk-model/",
     "dependencies": {
         "solid-js": "^1.9.10"
     },
     "devDependencies": {
         "@types/node": "^24.10.1",
+        "gh-pages": "^6.3.0",
         "typescript": "~5.9.3",
         "vite": "^7.2.4",
         "vite-plugin-solid": "^2.11.10"
