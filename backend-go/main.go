@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+"github.com/rs/cors" // <--- ADD THIS LINE
 
 	// 1. IMPORT PRISMA CLIENT: Use the relative path to the generated client package
 	// This assumes the client code is generated in the 'prisma-client' folder
