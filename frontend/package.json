@@ -5,8 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "./node_modules/.bin/tsc -b && vite build",
-        "postbuild": "cp -r dist/* ../",
+        "build": "tsc -b && vite build",
         "serve": "vite preview"
     },
     "dependencies": {
