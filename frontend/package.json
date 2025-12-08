@@ -6,9 +6,6 @@
     "scripts": {
         "dev": "vite",
         "build": "./node_modules/.bin/tsc -b && vite build",
-        // 🏆 FINAL FIX: After running 'npm run build', copy everything
-        // from frontend/dist up to the project root for Vercel deployment.
-        "postbuild": "cp -r dist/* ../",
         "serve": "vite preview"
     },
     "dependencies": {
