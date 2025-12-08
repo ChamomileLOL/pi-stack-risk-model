@@ -1,4 +1,9 @@
-[build]
+﻿[build]
   base = "frontend"
-  publish = "dist" 
-  command = "npm install && npm run build" # THE FINAL FIX
+  publish = "dist"
+  command = "npm install && npm run build"
+
+[build.environment]
+  # 🏆 THE FINAL FIX: Forces a known, stable Node version to prevent
+  # dependency installation failures that result in an empty 'dist' folder.
+  NODE_VERSION = "20"
