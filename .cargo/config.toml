@@ -1,0 +1,6 @@
+# C:\Users\Acer\source\repos\pi-stack-risk-model\.cargo\config.toml
+
+# Force the host build scripts to use the working GNU toolchain, 
+# bypassing the broken MSVC linker (link.exe) dependency.
+[build]
+target = "x86_64-pc-windows-gnu"

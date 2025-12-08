@@ -1,0 +1,21 @@
+// temp_schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:24-BECET-23D-0736-04046076@localhost:5432/pi_stack?schema=public&sslmode=disable"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Copy the Asset model from your original schema here
+model Asset {
+  id              Int     @id @default(autoincrement())
+  ticker          String  @unique
+  name            String
+  initialPrice    Float   @map("initial_price")
+  drift           Float   // Expected return (mu)
+  volatility      Float   // Standard deviation (sigma)
+
+  @@map("assets")
+}
