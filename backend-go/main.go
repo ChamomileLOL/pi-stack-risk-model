@@ -1,4 +1,4 @@
-// backend-go/main.go (Phase 7, Step 3 - Final Integration)
+// backend-go/main.go (Final Integration with CORS)
 package main
 
 import (
@@ -8,18 +8,19 @@ import (
 	"log"
 	"net/http"
 	"time"
-"github.com/rs/cors" // <--- ADD THIS LINE
 
-	// 1. IMPORT PRISMA CLIENT: Use the relative path to the generated client package
-	// This assumes the client code is generated in the 'prisma-client' folder
-    prisma "pi-stack-risk-model/backend-go/prisma-client"
+	// 1. IMPORT CORS PACKAGE
+	"github.com/rs/cors"
+
+	// 2. IMPORT PRISMA CLIENT: Use the relative path to the generated client package
+	prisma "pi-stack-risk-model/backend-go/prisma-client"
 )
 
-// Define the data structure for an incoming stock tick 
+// Define the data structure for an incoming stock tick
 type StockTick struct {
 	Symbol string `json:"symbol"`
-	Price  float64 `json:"price"`
-	Volume int    `json:"volume"`
+	Price float64 `json:"price"`
+	Volume int `json:"volume"`
 }
 
 // Global variable for the prisma Prisma Client
@@ -45,7 +46,7 @@ func ingestDataHandler(w http.ResponseWriter, r *http.Request) {
 		totalVolume += tick.Volume
 	}
 
-	// 2. Save the Aggregated Tick data to the PostgreSQL database (Prisma)
+	// Save the Aggregated Tick data to the PostgreSQL database (Prisma)
 	_, err = client.AggregatedTick.CreateOne(
 		prisma.AggregatedTick.Symbol.Set("PI-TICK"),
 		prisma.AggregatedTick.StartTime.Set(time.Now()),
@@ -67,16 +68,16 @@ func wasmEdgeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not supported. Use GET.", http.StatusMethodNotAllowed)
 		return
 	}
-	
-	// 3. Save the Wasm Risk Model Result to the PostgreSQL database (Prisma)
+
+	// Save the Wasm Risk Model Result to the PostgreSQL database (Prisma)
 	// Simulates a successful Wasm execution returning a Value-at-Risk (VaR)
 	riskValue := 9.999999
-	
+
 	_, err := client.RiskModelResult.CreateOne(
 		prisma.RiskModelResult.Portfolio.Set("GlobalVol"),
 		prisma.RiskModelResult.ValueAtRisk.Set(riskValue),
 	).Exec(context.Background())
-	
+
 	if err != nil {
 		log.Printf("Prisma Risk Save Error: %v", err)
 		http.Error(w, "Wasm executed, but database save failed.", http.StatusInternalServerError)
@@ -89,7 +90,7 @@ func wasmEdgeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// 4. Initialize the Prisma Client
+	// Initialize the Prisma Client
 	client = prisma.NewClient()
 	if err := client.Connect(); err != nil {
 		log.Fatalf("Could not connect to Prisma Database: %v", err)
@@ -101,16 +102,32 @@ func main() {
 	}()
 	log.Println("Prisma Client connected to PostgreSQL.")
 
-	// Define API routes
-	http.HandleFunc("/data/ingest", ingestDataHandler)
-	http.HandleFunc("/wasm/edge", wasmEdgeHandler)
+	// Create a new Mux (Router)
+	// We use Mux here instead of http.HandleFunc because it allows easy CORS wrapping
+	mux := http.NewServeMux()
+	mux.HandleFunc("/data/ingest", ingestDataHandler)
+	mux.HandleFunc("/wasm/edge", wasmEdgeHandler)
+
+	// --- CRITICAL CORS FIX ---
+	// 1. Configure CORS options for your GitHub Pages frontend
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"https://chamomilelol.github.io"}, // *** MATCHES YOUR FRONTEND URL ***
+		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders: []string{"Content-Type"},
+		// Required for standard browser requests
+		AllowCredentials: true,
+		Debug: true,
+	})
+
+	// 2. Wrap the Mux (Router) with the CORS handler
+	handler := c.Handler(mux)
 
 	// The Go server will run on port 8080
 	port := "8080"
 	fmt.Printf("Go Backend Server listening on http://localhost:%s\n", port)
 	
-	// Start the server
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	// Start the server using the CORS-wrapped handler
+	if err := http.ListenAndServe(":"+port, handler); err != nil { // <-- NOTE: 'handler' is used instead of 'nil'
 		log.Fatalf("Could not start server: %s\n", err)
 	}
 }
