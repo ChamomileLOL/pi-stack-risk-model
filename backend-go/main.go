@@ -112,7 +112,9 @@ func main() {
 	// --- CRITICAL CORS FIX ---
 	// 1. Configure CORS options for your GitHub Pages frontend
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"https://chamomilelol.github.io"}, // *** MATCHES YOUR FRONTEND URL ***
+		AllowedOrigins: []string{"https://chamomilelol.github.io", 
+		"https://pi-stack-risk-model.vercel.app", 
+	},
 		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders: []string{"Content-Type"},
 		// Required for standard browser requests
