@@ -10,7 +10,7 @@
         "predeploy": "npm run build",
         "deploy": "gh-pages -d dist"
     },
-    "homepage": "https://chamomilelol.github.io/pi-stack-risk-model/",
+    
     "dependencies": {
         "solid-js": "^1.9.10"
     },
