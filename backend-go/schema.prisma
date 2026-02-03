@@ -1,0 +1,38 @@
+// prisma/schema.prisma (FINAL FIXED SCHEMA)
+
+// 1. Database Configuration and Go Client Generation
+generator db {
+  provider  = "go run github.com/steebchen/prisma-client-go"
+  output    = "../backend-go/prisma-client" // Specify the output path
+  goVersion = "1.21" // Crucial fix for Generics error
+}
+
+datasource db {
+  provider = "postgresql"
+  // IMPORTANT: This URL must match the connection string you set in the environment variable.
+  url      = env("DATABASE_URL") 
+}
+
+// 2. Data Models (Final Validation Fix: Using @db.DoublePrecision)
+
+// Table to store high-frequency data pre-processed by the Go Backend
+model AggregatedTick {
+  id            Int      @id @default(autoincrement())
+  symbol        String   @db.VarChar(10)
+  startTime     DateTime @unique
+  totalVolume   Int
+  averagePrice  Float    @db.DoublePrecision // FINAL FIX
+  
+  createdAt     DateTime @default(now())
+}
+
+// Table to store the results from the Rust Wasm Monte Carlo simulation
+model RiskModelResult {
+  id            Int      @id @default(autoincrement())
+  portfolio     String   @db.VarChar(50)
+  // Value-at-Risk (VaR) result from the Wasm core
+  valueAtRisk   Float    @db.DoublePrecision // FINAL FIX
+  
+  // Timestamp of the calculation
+  calculatedAt  DateTime @default(now())
+}
