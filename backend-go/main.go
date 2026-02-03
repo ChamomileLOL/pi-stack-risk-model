@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	// 1. IMPORT CORS PACKAGE
@@ -122,12 +123,16 @@ func main() {
 	// 2. Wrap the Mux (Router) with the CORS handler
 	handler := c.Handler(mux)
 
-	// The Go server will run on port 8080
-	port := "8080"
-	fmt.Printf("Go Backend Server listening on http://localhost:%s\n", port)
-	
-	// Start the server using the CORS-wrapped handler
-	if err := http.ListenAndServe(":"+port, handler); err != nil { // <-- NOTE: 'handler' is used instead of 'nil'
-		log.Fatalf("Could not start server: %s\n", err)
-	}
+	// --- FIX: Dynamic Port for Render ---
+port := os.Getenv("PORT") // Import "os" in your import block!
+if port == "" {
+    port = "8080" // Fallback for local development
+}
+
+fmt.Printf("Go Backend Server listening on port %s\n", port)
+
+// Start the server using the CORS-wrapped handler
+// Use ":" + port to ensure it binds to the correct environment port
+if err := http.ListenAndServe(":"+port, handler); err != nil {
+    log.Fatalf("Could not start server: %s\n", err)
 }
