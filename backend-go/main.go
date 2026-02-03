@@ -136,3 +136,5 @@ fmt.Printf("Go Backend Server listening on port %s\n", port)
 if err := http.ListenAndServe(":"+port, handler); err != nil {
     log.Fatalf("Could not start server: %s\n", err)
 }
+
+}
