@@ -1,0 +1,9 @@
+.env
+
+# Go
+/bin
+/main
+*.exe
+
+# Rust
+/target
